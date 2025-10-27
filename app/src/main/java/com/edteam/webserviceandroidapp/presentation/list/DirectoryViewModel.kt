@@ -1,8 +1,10 @@
 package com.edteam.webserviceandroidapp.presentation.list
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshots.SnapshotApplyResult
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.edteam.webserviceandroidapp.core.Result
 import com.edteam.webserviceandroidapp.data.Developer
 import com.edteam.webserviceandroidapp.data.repository.DirectoryRepostoryImp
 import kotlinx.coroutines.Dispatchers
@@ -22,7 +24,15 @@ class DirectoryViewModel: ViewModel() {
                 val response = withContext(Dispatchers.IO) {
                     directory.getDirectory()
                 }
-                state.value = state.value.copy(directory = response)
+               when(response){
+                   is Result.Error<*> -> {
+                       state.value = state.value.copy(error = response.message)
+                   }
+                   is Result.Success<*> -> {
+                       state.value = state.value.copy(directory = response.data)
+                   }
+               }
+
             }catch (e: Error){
                 state.value = state.value.copy(error = e.message)
             } finally{
@@ -39,7 +49,15 @@ class DirectoryViewModel: ViewModel() {
                     directory.deleteDeveloper(id)
                 }
 
-                state.value = state.value.copy(deleteSuccess = response)
+                when(response){
+                    is Result.Error<*> -> {
+                        state.value = state.value.copy(error = response.message)
+                    }
+                    is Result.Success<*> -> {
+                        state.value = state.value.copy(deleteSuccess = response.data)
+                    }
+                }
+
             }catch (e: Exception){
                 state.value = state.value.copy(error = e.message)
             } finally {
@@ -48,9 +66,10 @@ class DirectoryViewModel: ViewModel() {
         }
     }
 
-    fun clearDeleteState(){
+    fun deleteClearState(){
         state.value = state.value.copy(deleteSuccess = null)
     }
+
 }
 
 data class DirectoryState(

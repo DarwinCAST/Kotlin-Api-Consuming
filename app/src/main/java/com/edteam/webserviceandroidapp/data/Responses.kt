@@ -14,5 +14,10 @@ data class CreateDeveloperResponse(
     val data: DeveloperRequest
 )
 
+data class DeveloperResponse(
+    val success: String,
+    val message: String,
+    val data: Developer
+)
 
 data class DeleteDeveloperResponse(val success: Boolean, val message: String, val data: String)

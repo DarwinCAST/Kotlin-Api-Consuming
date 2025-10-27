@@ -7,6 +7,7 @@ import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 
 object Api {
@@ -32,6 +33,12 @@ object Api {
 
         @POST("developer")
         suspend fun createDeveloper(@Body request: DeveloperRequest): Response<CreateDeveloperResponse>
+
+        @GET("developer/{developerId}")
+        suspend fun getDeveloperById(@Path("developerId") developerId: Int): Response<DeveloperResponse>
+
+        @PUT("developer")
+        suspend fun updateDeveloper(@Body request: DeveloperRequest): Response<CreateDeveloperResponse>
 
     }
 

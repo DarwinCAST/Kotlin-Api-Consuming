@@ -41,7 +41,8 @@ fun TopAppBar(
     modifier: Modifier = Modifier,
     title: String,
     style: TextStyle,
-    icon: ImageVector
+    icon: ImageVector,
+    onClickIcon: ()-> Unit = {}
 ) {
     CenterAlignedTopAppBar(
         modifier = modifier,
@@ -53,7 +54,7 @@ fun TopAppBar(
             titleContentColor = Color.White
         ),
         navigationIcon = {
-            IconButton(onClick = {}) {
+            IconButton(onClick = {onClickIcon()}) {
                 Icon(
                     imageVector = icon, contentDescription = "Icon Navigation", tint = Color.White,
                 )

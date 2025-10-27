@@ -31,6 +31,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -49,8 +50,9 @@ import com.edteam.webserviceandroidapp.presentation.common.CircleWithLetter
 @Composable
 fun DirectoryScreen(
     modifier: Modifier = Modifier,
-    directoryViewModel: DirectoryViewModel = viewModel()
-) {
+    directoryViewModel: DirectoryViewModel = viewModel(),
+    onNavigate: (Int?) -> Unit
+    ) {
     val context = LocalContext.current
     val state = directoryViewModel.state.value;
     val showDialog = remember { mutableStateOf(false) }
@@ -60,7 +62,7 @@ fun DirectoryScreen(
         directoryViewModel.getDirectory()
     }
 
-    if(showDialog.value){
+    if (showDialog.value) {
         AlertDialog(showDialog = true, onDelete = {
             directoryViewModel.deleteDirectory(developerId.value)
             showDialog.value = false
@@ -69,7 +71,7 @@ fun DirectoryScreen(
 
     if (state.deleteSuccess != null) {
         Toast.makeText(context, state.deleteSuccess, Toast.LENGTH_SHORT).show()
-        directoryViewModel.clearDeleteState()
+        directoryViewModel.deleteClearState()
         directoryViewModel.getDirectory()
     }
 
@@ -101,18 +103,40 @@ fun DirectoryScreen(
         ) {
             state.directory?.let { developers ->
                 items(developers) { developer ->
-                    ItemDeveloper(developer = developer, deleteDeveloper = {id ->
+                    ItemDeveloper(developer = developer, deleteDeveloper = { id ->
                         developerId.value = id
                         showDialog.value = true
+                    }, editDeveloper = {
+                        onNavigate(it)
                     })
                 }
+            }
+        }
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(start = 16.dp, bottom = 26.dp),
+            contentAlignment = Alignment.BottomStart
+        ) {
+            FloatingActionButton(onClick = { onNavigate(null)}) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_add),
+                    contentDescription = "add item",
+                    modifier = Modifier.size(24.dp),
+                )
             }
         }
     }
 }
 
 @Composable
-fun ItemDeveloper(modifier: Modifier = Modifier, developer: Developer, deleteDeveloper: (Int) -> Unit) {
+fun ItemDeveloper(
+    modifier: Modifier = Modifier,
+    developer: Developer,
+    deleteDeveloper: (Int) -> Unit,
+    editDeveloper: (Int) -> Unit
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -153,17 +177,21 @@ fun ItemDeveloper(modifier: Modifier = Modifier, developer: Developer, deleteDev
                     Icon(
                         imageVector = ImageVector.vectorResource(id = R.drawable.ic_delete),
                         contentDescription = "delete",
-                        modifier = Modifier.size(30.dp).clickable{
-                           deleteDeveloper(developer.id)
-                        }
+                        modifier = Modifier
+                            .size(30.dp)
+                            .clickable {
+                                deleteDeveloper(developer.id)
+                            }
                     )
                     Spacer(modifier = Modifier.padding(horizontal = 3.dp))
                     Icon(
                         imageVector = ImageVector.vectorResource(id = R.drawable.ic_edit),
                         contentDescription = "edit",
-                        modifier = Modifier.size(30.dp).clickable{
-
-                        }
+                        modifier = Modifier
+                            .size(30.dp)
+                            .clickable {
+                                editDeveloper(developer.id)
+                            }
                     )
                 }
             }
