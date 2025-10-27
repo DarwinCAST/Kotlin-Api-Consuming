@@ -1,5 +1,7 @@
 package com.edteam.webserviceandroidapp.data
 
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -19,9 +21,17 @@ object Api {
     //1. Configurar retrofit
     val baseUrl = "http://10.0.2.2:3000/"
 
+
+    //Interceptors for logs in Apis
+    val interceptor = HttpLoggingInterceptor().apply {
+        setLevel(HttpLoggingInterceptor.Level.BODY)
+    }
+
+    val clientBuilder = OkHttpClient.Builder().addInterceptor(interceptor).build()
+
     val retrofit = Retrofit.Builder().baseUrl(baseUrl).addConverterFactory(
         GsonConverterFactory.create()
-    ).build()
+    ).client(clientBuilder).build()
 
     //2. Definir los metodos
     interface MethodApi {

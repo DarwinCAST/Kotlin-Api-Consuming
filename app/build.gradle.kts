@@ -75,6 +75,8 @@ dependencies {
     //Navigation compose
     implementation(libs.androidx.navigation.compose)
 
+    //LogginInterceptor
+    implementation(libs.loggin.interceptor)
 
 
 }
